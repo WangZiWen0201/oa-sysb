@@ -3,13 +3,13 @@
     <div class="app-footer-wrap-s">
       <div class="showloading" v-show="showloading"><span class="el-icon-loading"></span>数据正在加载~</div>
       <div class="app-footer-wrap" v-if="showsuper()">
-        <div @click="linkToPath('newsmedia', {super:1})" :class="{'active':$route.name == 'newsmedia'}"><p><i class="el-icon-menu"></i></p>{{this.newsmedia}}</div>
-        <div @click="linkToPath('taskdown', {super:1})" :class="{'active':$route.name == 'taskdown'}"><p><i class="el-icon-message"></i></p>{{this.taskdown}}</div>
-        <div @click="linkToPath('commenter', {super:1})" :class="{'active':$route.name == 'commenter'}"><p><i class="el-icon-date"></i></p>{{this.workremind}}</div>
-        <div @click="linkToPath('infomation', {super:1})" :class="{'active':$route.name == 'infomation'}"><p><i class="el-icon-document"></i></p>{{this.infomation}}</div>
+        <div @click="linkToPath('newsmedia')" :class="{'active':$route.name == 'newsmedia'}"><p><i class="el-icon-menu"></i></p>{{this.newsmedia}}</div>
+        <div @click="linkToPath('taskdown')" :class="{'active':$route.name == 'taskdown'}"><p><i class="el-icon-message"></i></p>{{this.taskdown}}</div>
+        <div @click="linkToPath('commenter')" :class="{'active':$route.name == 'commenter'}"><p><i class="el-icon-date"></i></p>{{this.commenter}}</div>
+        <div @click="linkToPath('infomation')" :class="{'active':$route.name == 'infomation'}"><p><i class="el-icon-document"></i></p>{{this.infomation}}</div>
       </div>
       <div class="app-footer-wrap" v-if="!showsuper()">
-        <div @click="linkToPath('commenter')" :class="{'active':$route.name == 'commenter'}"><p><i class="el-icon-date"></i></p>{{this.workremind}}</div>
+        <div @click="linkToPath('commenter')" :class="{'active':$route.name == 'commenter'}"><p><i class="el-icon-date"></i></p>{{this.commenter}}</div>
         <div @click="linkToPath('infomation')" :class="{'active':$route.name == 'infomation'}"><p><i class="el-icon-document"></i></p>{{this.infomation}}</div>
       </div>
     </div>
@@ -26,7 +26,7 @@ export default {
       taskdown: '任务下发',
       newsmedia: '舆情检测',
       infomation: '语料',
-      workremind: '我的任务',
+      commenter: '我的任务',
       showloading: false
     }
   },
@@ -92,7 +92,7 @@ a {
 }
 
 .active{
-  color: #ff2;
+  color: #eee;
 }
 .app-footer{
   position: fixed;
@@ -103,10 +103,10 @@ a {
   .app-footer-wrap{
     display: flex;
     justify-content: space-around;
-    background: #0c8484;
+    background: #20a0ff;
     border-bottom: 1px solid #58B7FF;
     outline: none;
-    color: #ff9;
+    color: #333;
     div{
       padding: 0 10px;
     }

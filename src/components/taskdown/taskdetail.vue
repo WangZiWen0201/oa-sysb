@@ -37,31 +37,11 @@
               <div>执行时间: {{i.excute_time}}</div>
               <div class="commenter--item-right-pic">
                 <span v-if="i.pic === '无'">暂无图片</span>
-                <img v-else :src="i.pic" alt="" @click="showPic(i.pic)">
+                <img v-else :src="i.pic" alt="">
               </div>
             </div>
           </div>
         </div>
-    </div>
-    <el-dialog title="图片放大提示" v-model="dialogVisible.show" size="tiny" id="showpic">
-      <img :src="dialogVisible.src" alt="">
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible.show = false">确 定</el-button>
-      </span>
-    </el-dialog>
-    <div class="uncomplete-detail-upload">
-      <el-upload
-        class="upload-demo"
-        ref="upload"
-        action="http://localhost:8088/bms/taskUserSend/impPic.action"
-        data="uploadparam"
-        :on-preview="handlePreview"
-        :on-remove="handleRemove"
-        :file-list="fileList">
-        <el-button slot="trigger" size="small" type="primary">选择图片</el-button>
-        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">下发任务</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件</div>
-      </el-upload>
     </div>
   </div>
 </template>
@@ -69,25 +49,19 @@
 <script>
 import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { USER_INFO } from '../../../store/storex'
-import appHeader from '../../common/header.vue'
+import { USER_INFO } from '../../store/storex'
+import appHeader from '../common/header.vue'
 export default {
-  name: 'uncompletedetail',
+  name: 'taskdetail',
   data () {
     return {
-      msg: 'uncompletedetail here',
+      msg: 'completedetail here',
       showloading: false,
       nodatalist: false,
       nodata: false,
-      dialogVisible: {
-        show: false,
-        src: ''
-      },
       taskerdetailarr: {},
       issueDetailArr: [],
-      pager: 1,
-      fileList: [],
-      uploadparam: {}
+      pager: 1
     }
   },
   components: {
@@ -106,9 +80,9 @@ export default {
       Vue.http.options.emulateJSON = true
       if (this.$store.state.user) {
         let prefix = this.$store.state.user.CHECKED_STATUS
-        let taskuserid = this.$route.query.taskuserid || ''
-        let detailPageTaskUserIndexUrl = prefix + '/bms/taskUser/detailPageTaskUserIndex.action'
-        this.$http.post(detailPageTaskUserIndexUrl, {taskuserid: taskuserid}).then((response) => {
+        let taskid = this.$route.query.taskid || ''
+        let detailPageTaskUserIndexUrl = prefix + '/bms/task/detailPageIndex.action'
+        this.$http.post(detailPageTaskUserIndexUrl, {taskid: taskid}).then((response) => {
           let resdata = response.body
           let states = ''
           if (resdata === '' || resdata === null || resdata === undefined) {
@@ -131,7 +105,6 @@ export default {
           this.taskerdetailarr.remarks = resdata.remarks
           this.taskerdetailarr.receivename = resdata.receivename
           this.taskerdetailarr.url = resdata.url
-          this.taskerdetailarr.taskid = resdata.taskid
           this.showloading = false
         }, (response) => {
           this.$alert('网络异常!')
@@ -143,13 +116,13 @@ export default {
       let issueDetail = {
         page: page,
         rows: rows,
-        taskuserid: ''
+        taskid: ''
       }
       this.showloading = true
       Vue.http.options.emulateJSON = true
       if (this.$store.state.user) {
         let prefix = this.$store.state.user.CHECKED_STATUS
-        issueDetail.taskuserid = this.$route.query.taskuserid || ''
+        issueDetail.taskid = this.$route.query.taskid || ''
         let queryIssueDetailsUrl = prefix + '/bms/taskUserSend/queryIssueDetails.action'
         this.$http.post(queryIssueDetailsUrl, issueDetail).then((response) => {
           console.log(response)
@@ -158,7 +131,7 @@ export default {
           let status = ''
           let pic_ = ''
           if (reslen === 0 && page === 1) {
-            this.$message('暂无数据')
+            this.$alert('暂无数据')
             this.nodatalist = true
           } else if (reslen === 0 && page > 1) {
             this.$alert('已显示所有数据')
@@ -198,25 +171,6 @@ export default {
           this.showloading = false
         })
       }
-    },
-    showPic (src) {
-      this.dialogVisible.src = src
-      this.dialogVisible.show = true
-    },
-    submitUpload () {
-      this.uploadparam.taskuserid = this.$route.query.taskuserid
-      this.uploadparam.taskid = this.taskerdetailarr.taskid
-      this.uploadparam.url = this.taskerdetailarr.url
-      this.uploadparam.enddate = this.taskerdetailarr.enddate
-      this.uploadparam.files = this.fileList[0]
-      console.log(this.uploadparam)
-      this.$refs.upload.submit()
-    },
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview (file) {
-      console.log(file)
     }
   },
   created () {
@@ -263,9 +217,6 @@ li {
 a {
   color: #42b983;
 }
-#showpic .el-dialog--tiny{
-  width: 100%;
-}
 .task--detail-header{
   height: 2.6rem;
   padding: 0 0.8rem;
@@ -283,6 +234,12 @@ a {
     text-align: left;
     margin: 0.5rem 0;
   }
+  &-text{
+    margin-top: 1rem;
+    width: 100%;
+    height: 20rem;
+    overflow-y: scroll;
+  }
   &-pic{
     display: flex;
     justify-content: space-around;
@@ -291,13 +248,9 @@ a {
     overflow: hidden;
     white-space: nowrap;
     width: 100%;
-    img{
-      width: 100%;
-      height: 100%;
-    }
   }
   .commenter--item-warp{
-    max-height: 16rem;
+    max-height: 24rem;
     overflow-y: scroll;
   }
 }
@@ -330,8 +283,5 @@ a {
         float: right;
       }
     }
-}
-.uncomplete-detail-upload{
-  margin-top: 1rem;
 }
 </style>

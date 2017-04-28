@@ -1,18 +1,23 @@
 <template>
-  <div class="app-login">
-    <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="4rem" class="demo-ruleForm" style="padding: 0 2rem">
-      <el-form-item label="用户名" prop="username">
-        <el-input v-model="ruleForm2.username"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm2.pass"></el-input>
-      </el-form-item>
-      <el-form-item class="rememberpw"><el-checkbox v-model="checked">记住用户</el-checkbox></el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm2')">登录<span v-show="loadshow" class="el-icon-loading"></span></el-button>
-        <el-button @click="resetForm('ruleForm2')">重置</el-button>
-      </el-form-item>
-    </el-form>
+  <div class="">
+    <div class="bg-bms">
+      <img src="./../../img/bms.png" alt="">
+    </div>
+    <div class="app-login">
+      <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="4rem" class="demo-ruleForm" style="padding: 0 2rem;color:#fff">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="ruleForm2.username" class="sessionname"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="pass">
+          <el-input type="password" v-model="ruleForm2.pass"></el-input>
+        </el-form-item>
+        <!-- <el-form-item class="rememberpw"><el-checkbox v-model="checked">记住用户</el-checkbox></el-form-item> -->
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm2')">登录<span v-show="loadshow" class="el-icon-loading"></span></el-button>
+          <el-button @click="resetForm('ruleForm2')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -40,7 +45,7 @@ export default {
       msg: 'login here',
       btn: false,
       loadshow: false,
-      checked: false,
+      // checked: false,
       checkedbtn: false,
       form: {
         userName: '',
@@ -60,11 +65,6 @@ export default {
       }
     }
   },
-  watch: {
-    'checked' () {
-      this.checked === true ? localStorage.setItem('rememberbtn', true) : localStorage.setItem('rememberbtn', false)
-    }
-  },
   methods: {
     ...mapActions([USER_SIGNIN]),
     ...mapActions([USER_INFO]),
@@ -79,13 +79,18 @@ export default {
           }
           Vue.http.options.emulateJSON = true
           this.$http.post('http://localhost:8088/bms/loginApp/loginUserApp.action', data).then((response) => {
+            if (!response.body.status) {
+              this.$alert(response.body.message)
+              this.loadshow = false
+              return
+            }
             if (response.status) {
               if (this.checked === true) {
-                localStorage.setItem('checked', true)
+                // localStorage.setItem('checked', true)
                 localStorage.setItem('userName', this.ruleForm2.username)
                 localStorage.setItem('userPassword', md5(this.ruleForm2.pass))
               } else {
-                localStorage.setItem('checked', false)
+                // localStorage.setItem('checked', false)
                 localStorage.removeItem('userName')
                 localStorage.removeItem('userPassword')
               }
@@ -94,21 +99,14 @@ export default {
               this.USER_INFO(response)
               this.loadshow = false
               let objdata = this.$store.state.user.body.resultObj || ''
+              sessionStorage.setItem('userName', this.ruleForm2.username)
               if (objdata.roleValue === 'ADMIN' || objdata.roleValue === 'SUPER') {
                 this.$router.push({
-                  path: 'newsmedia',
-                  query: {
-                    u_userid: objdata.u_userid,
-                    u_roleId: objdata.u_roleId
-                  }
+                  path: 'newsmedia'
                 })
               } else {
                 this.$router.push({
-                  path: 'commenter',
-                  query: {
-                    u_userid: objdata.u_userid,
-                    u_roleId: objdata.u_roleId
-                  }
+                  path: 'commenter'
                 })
               }
             } else {
@@ -135,9 +133,6 @@ export default {
         this.ruleForm2.pass = ''
         this.ruleForm2.username = ''
       }
-      console.log(this.ruleForm2.pass)
-      console.log(this.ruleForm2.username)
-      console.log(this.checked)
     }
   },
   created () {
@@ -148,15 +143,16 @@ export default {
     }
   },
   mounted () {
-    // if (this.checked) {
-    //   this.$refs['ruleForm2'].resetFields()
-    // }
+    this.resetForm('ruleForm2')
+    if (sessionStorage.getItem('userName')) {
+      this.ruleForm2.username = sessionStorage.getItem('userName')
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 ul {
   list-style-type: none;
   padding: 0;
@@ -170,10 +166,29 @@ li {
 a {
   color: #42b983;
 }
+.bg-bms{
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  top: 12%;
+  z-index: 111;
+}
 .app-login{
-  margin-top: 15rem;
+  background: url('./../../img/background.jpg') no-repeat center center fixed;
+  position:absolute;
+  z-index:-1;
+  width:100%;
+  height:100%;
+  top:0px;
+  left:0px;
+  .demo-ruleForm{
+    margin-top: 15rem;
+  }
   .rememberpw{
     text-align: left;
+  }
+  label.el-form-item__label{
+    color: #fff;
   }
 }
 .login {

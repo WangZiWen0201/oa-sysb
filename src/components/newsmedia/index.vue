@@ -18,20 +18,27 @@
             </el-radio-group>
           </div>
           <div class="newsmedia--extend-timer">
-            <span>起止时间:</span>
-            <el-select v-model="searchParam.timer" @change="changeTimer(searchParam.timer)">
-              <el-option :value="0">一天内</el-option>
-              <el-option :value="1">两天内</el-option>
-              <el-option :value="2">三天内</el-option>
-              <el-option :value="3">四天内</el-option>
-              <el-option :value="4">五天内</el-option>
-              <el-option :value="5">六天内</el-option>
-              <el-option :value="6">七天内</el-option>
-            </el-select>
+            <el-form>
+              <el-form-item>
+                <span>起止时间:</span>
+                <el-select v-model="timeroptionss" @change="changeTimer(timeroptionss)">
+                  <el-option
+                    v-for="(item, value) in timeroptions"
+                    :label="item.label" :key="value.item"
+                    :value="item.values">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
           </div>
           <div class="newsmedia--extend-content">
-            <span>搜索范围:</span>
-            <el-input v-model="searchParam.content" placeholder="请输入搜索内容" class="el-inputs"></el-input>
+            <span class="newsmedia--extend-content-span">信息源:</span>
+            <div class="">
+              <el-checkbox v-for="(item, value) in checkListBox" :key="value.item" :value="item.amsSiteId" v-model="item.keywords">
+                {{item.name}}
+              </el-checkbox>
+            </div>
+            <!-- <span v-show="checkList.length === 0">暂无信息源</span> -->
           </div>
         </div>
         <div class="newsmedia--list">
@@ -51,7 +58,8 @@
 
 <script>
 import Vue from 'vue'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import { USER_INFO } from '../../store/storex'
 import appHeader from '../common/header.vue'
 import appFooter from '../common/footer.vue'
 export default {
@@ -61,31 +69,54 @@ export default {
       input: '',
       checkedmutil: false,
       tableData: [],
-      pageindex: 0,
       showloading: false,
       extendRadio: '',
+      pager: 1,
       searchParam: {
         radio: '',
-        timer: '',
         content: ''
-      }
+      },
+      timeroptionss: {},
+      timeroptions: [{
+        values: '1',
+        label: '一天内'
+      }, {
+        values: '2',
+        label: '两天内'
+      }, {
+        values: '3',
+        label: '三天内'
+      }, {
+        values: '4',
+        label: '四天内'
+      }, {
+        values: '5',
+        label: '五天内'
+      }, {
+        values: '6',
+        label: '六天内'
+      }, {
+        values: '7',
+        label: '七天内'
+      }],
+      checkList: [],
+      checkListBox: []
     }
   },
   components: {
     appFooter: appFooter,
     appHeader: appHeader
   },
+  computed: mapState({
+    state: state => state.user
+  }),
   methods: {
-    handleIconClick () {
-      console.log('search event')
-    },
+    ...mapActions([USER_INFO]),
     changeRadio (a) {
-      console.log(a)
       this.searchParam.radio = a
     },
     changeTimer (b) {
       console.log(b)
-      this.searchParam.timer = b
     },
     tableRowClassName (row, index) {
       if (index % 2) {
@@ -108,30 +139,141 @@ export default {
         this.options4 = []
       }
     },
-    getSentiment (a, b) {
+    getSentiment (a, b, c, d) {
+      let sentimentparam = {
+        page: a,
+        rows: b,
+        u_userid: '',
+        content: c || '',
+        sendtimentType: '',
+        sendtimentTime: '',
+        sentimentCheck: ''
+      }
+      sentimentparam.content = this.input
       this.showloading = true
       Vue.http.options.emulateJSON = true
-      this.$http.post('http://localhost:8088/bms/comment/getSentimentMonitorData.action', { page: a, rows: b }).then((response) => {
-        let data = response.body.hits.display
-        for (let i = 0; i < data.length; i++) {
-          this.tableData.push({text: data[i].text, mid: data[i].mid})
+      if (this.checkedmutil) {
+        let checkboxcol = document.querySelectorAll('.newsmedia--extend-content .el-checkbox__original')
+        // let len_col = checkboxcol.length
+        for (let i = 0; i < checkboxcol.length; i++) {
+          if (checkboxcol[i].checked === true) {
+            sentimentparam.sentimentCheck = sentimentparam.sentimentCheck + checkboxcol[i].parentElement.parentElement.getAttribute('value') + ','
+          }
         }
-        this.showloading = false
-        this.pageindex++
-      }, (response) => {
-        this.showloading = false
-        // this.alert('网络异常,请检查')
-      })
+        sentimentparam.sendtimentType = this.searchParam.radio || ''
+        sentimentparam.sendtimentTime = this.timeroptionss || ''
+      }
+      if (this.$store.state.user) {
+        sentimentparam.u_userid = this.$store.state.user.body.resultObj.u_userid || ''
+        this.$http.post('http://localhost:8088/bms/comment/getSentimentMonitorData.action', sentimentparam).then((response) => {
+          let data = response.body.hits.display
+          this.tableData = []
+          for (let i = 0; i < data.length; i++) {
+            this.tableData.push({text: data[i].text, mid: data[i].mid})
+          }
+          this.showloading = false
+        }, (response) => {
+          this.showloading = false
+          this.alert('网络异常,请检查')
+        })
+      }
+    },
+    handleIconClick () {
+      this.getSentiment(1, 15, this.input)
+    },
+    checkListArr (a) {
+      console.log(a)
+    },
+    checkboxsinfo () {
+      // /comment/queryAmsSiteList.action
+      this.showloading = true
+      if (this.$store.state.user) {
+        let prefix = this.$store.state.user.CHECKED_STATUS + '/bms/comment/queryAmsSiteList.action'
+        this.$http.post(prefix).then((response) => {
+          let resdata = response.body
+          let len = resdata.length
+          for (let i = 0; i < len; i++) {
+            this.checkListBox.push({amsSiteId: resdata[i].amsSiteId, name: resdata[i].name})
+            // this.checkList.push(resdata[i].name)
+          }
+          this.showloading = false
+        }, (response) => {
+          this.showloading = false
+          this.alert('网络异常,请检查')
+        })
+      }
     },
     detailid (index, value) {
-      console.log(value[index].mid)
+      console.log(value)
+      let mid = value[index].mid
+      this.$router.push({
+        path: 'newsmediadetail',
+        query: {
+          id: mid
+        }
+      })
     }
   },
-  computed: mapState({
-    checktatus: state => state.user.CHECKED_STATUS
-  }),
   created () {
-    this.getSentiment(1, 20)
+    this.getSentiment(1, 15)
+    this.checkboxsinfo()
+  },
+  mounted () {
+    let tbodyWrapperEl = document.querySelector('.el-table__body-wrapper')
+    let getTbodyScrollToBottom = () => {
+      let tbodyEl = tbodyWrapperEl.lastElementChild
+      // let lastTr = [].slice.call(tbodyEl.querySelectorAll('tr'), 0).slice(-1)[0]
+      let result = false
+      if (tbodyWrapperEl.clientHeight + tbodyWrapperEl.scrollTop >= tbodyEl.clientHeight) {
+        result = true
+      }
+      return result
+    }
+    tbodyWrapperEl.addEventListener('scroll', (event) => {
+      if (getTbodyScrollToBottom()) {
+        // this.tableData3.push()
+        this.pager++
+        let param = {
+          page: this.pager,
+          rows: 15,
+          content: '',
+          sendtimentTime: '',
+          sendtimentType: '',
+          sentimentCheck: ''
+        }
+        this.showloading = true
+        if (this.$store.state.user) {
+          param.content = this.input
+          if (this.checkedmutil) {
+            param.sendtimentType = this.searchParam.radio || ''
+            param.sendtimentTime = this.timeroptionss || ''
+            param.sentimentCheck = ''
+          }
+          let prefix = this.$store.state.user.CHECKED_STATUS
+          let queryCorpusUserList = prefix + '/bms/comment/getSentimentMonitorData.action'
+          this.$http.post(queryCorpusUserList, param).then((response) => {
+            let pagetoals = response.body.hits.total
+            let data = response.body.hits.display
+            let len = data.length
+            if (pagetoals > 0) {
+              for (let i = 0; i < len; i++) {
+                this.tableData.push({text: data[i].text, mid: data[i].mid})
+              }
+              this.showloading = false
+              if (len === 0) {
+                this.$alert('全部数据在这里啦')
+              }
+            } else {
+              this.$alert('暂无数据')
+            }
+            this.showloading = false
+          })
+        } else {
+          this.showloading = false
+          this.$alert('建议重新登录!')
+        }
+      }
+    })
   }
 }
 </script>
@@ -155,6 +297,13 @@ li {
 a {
   color: #42b983;
 }
+.newsmedia--searh-normal{
+  .el-icon-search{
+    background: #20a0ff;
+    border-radius: 5px;
+    color: #fff;
+  }
+}
 .showloading{
   position: absolute;
   top: 50%;
@@ -168,16 +317,35 @@ a {
 .newsmedia--extend{
   &-timer,&-content,&-radio{
     display: flex;
-    justify-content: space-between;
-
   }
   &-timer,&-content{
     margin-top: 0.5rem;
     line-height: 2rem;
   }
   &-content{
+    &-span{
+      white-space: nowrap;
+    }
+  }
+  &-radio{
+    .el-radio-group{
+      margin-left: 3px;
+    }
+  }
+  &-timer{
+    .el-form-item{
+      margin: 0;
+      .el-form-item__content{
+        span{
+          font-size: 16px;
+        }
+      }
+    }
+  }
+  &-content{
     .el-inputs{
       width: auto;
+      margin-left: 3px;
     }
   }
 }
@@ -196,7 +364,7 @@ a {
 }
 
 .newsmedia--list{
-  margin-top: 1rem;
+  margin: 1rem 0 5rem;
   .table-th-t,.table-th-d{
     text-align: center;
     overflow: hidden;

@@ -41,9 +41,9 @@
         </div>
       </div>
       <el-table :data="tableData" border style="width: 100%">
-       <el-table-column  prop="content" label="内容" width="120"></el-table-column>
-       <el-table-column  prop="times" label="引用次数" width="115"></el-table-column>
-       <el-table-column  label="详情" width="115">
+       <el-table-column  prop="content" label="内容"></el-table-column>
+       <el-table-column  prop="times" label="引用次数"></el-table-column>
+       <el-table-column  label="详情">
          <template scope="scope">
            <el-button type="text" size="small" @click.native.prevent="detailid(scope.$index, tableData)">详情</el-button>
          </template>
@@ -319,7 +319,7 @@ a {
     text-align: center;
   }
   .el-table__body-wrapper{
-    max-height: 18rem;
+    max-height: 20rem;
   }
   table tbody tr .cell{
     text-overflow: ellipsis;
