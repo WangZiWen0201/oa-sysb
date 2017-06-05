@@ -1,29 +1,6 @@
 <template>
   <div class="">
     <app-header></app-header>
-<<<<<<< HEAD
-    <div class="complete-detail">
-        <div class="complete-detail-title">深圳公交失物招领系统上线</div>
-        <div class="commenter--item">
-          <div class="commenter--item-left">
-            <div>编码: 20170407</div>
-            <div>类型:  跟帖</div>
-            <div>任务描述: 直升机飞行千里救援患病老人</div>
-          </div>
-          <div class="commenter--item-right">
-            <div>发布人: 超管1</div>
-            <div>发布时间：2017-04-05 09：30</div>
-            <div>结束时间：2017-04-10 09：30</div>
-          </div>
-        </div>
-        <textarea class="complete-detail-text"></textarea>
-        <div class="complete-detail-pic">
-          <div class="">pic1</div>
-          <div class="">pic2</div>
-          <div class="">pic3</div>
-        </div>
-    </div>
-=======
     <div v-show="showloading" class="showloading"><span class="el-icon-loading" ></span>数据加载中</div>
     <div class="taskdown--nodata" v-show="nodata">暂无数据</div>
     <div class="complete-detail">
@@ -60,60 +37,36 @@
               <div>执行时间: {{i.excute_time}}</div>
               <div class="commenter--item-right-pic">
                 <span v-if="i.pic === '无'">暂无图片</span>
-                <img v-else :src="i.pic" alt="" @click="showPic(i.pic)">
+                <img v-else :src="i.pic" alt="">
               </div>
             </div>
           </div>
         </div>
     </div>
-    <el-dialog title="图片放大提示" v-model="dialogVisible.show" size="tiny" id="showpic">
-      <img :src="dialogVisible.src" alt="">
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible.show = false">确 定</el-button>
-      </span>
-    </el-dialog>
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   </div>
 </template>
 
 <script>
-<<<<<<< HEAD
-=======
 import Vue from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { USER_INFO } from '../../../store/storex'
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
-import appHeader from '../../common/header.vue'
+import { USER_INFO } from '../../store/storex'
+import appHeader from '../common/header.vue'
 export default {
-  name: 'completedetail',
+  name: 'taskdetail',
   data () {
     return {
-<<<<<<< HEAD
-      msg: 'completedetail here'
-=======
       msg: 'completedetail here',
       showloading: false,
       nodatalist: false,
       nodata: false,
-      dialogVisible: {
-        show: false,
-        src: ''
-      },
       taskerdetailarr: {},
       issueDetailArr: [],
       pager: 1
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
     }
   },
   components: {
     appHeader: appHeader
   },
-<<<<<<< HEAD
-  methods: {
-    linkToPath (path) {
-      this.$router.push({path: path})
-    }
-=======
   computed: mapState({
     user: state => state.user
   }),
@@ -127,9 +80,9 @@ export default {
       Vue.http.options.emulateJSON = true
       if (this.$store.state.user) {
         let prefix = this.$store.state.user.CHECKED_STATUS
-        let taskuserid = this.$route.query.taskuserid || ''
-        let detailPageTaskUserIndexUrl = prefix + '/bms/taskUser/detailPageTaskUserIndex.action'
-        this.$http.post(detailPageTaskUserIndexUrl, {taskuserid: taskuserid}).then((response) => {
+        let taskid = this.$route.query.taskid || ''
+        let detailPageTaskUserIndexUrl = prefix + '/bms/task/detailPageIndex.action'
+        this.$http.post(detailPageTaskUserIndexUrl, {taskid: taskid}).then((response) => {
           let resdata = response.body
           let states = ''
           if (resdata === '' || resdata === null || resdata === undefined) {
@@ -163,13 +116,13 @@ export default {
       let issueDetail = {
         page: page,
         rows: rows,
-        taskuserid: ''
+        taskid: ''
       }
       this.showloading = true
       Vue.http.options.emulateJSON = true
       if (this.$store.state.user) {
         let prefix = this.$store.state.user.CHECKED_STATUS
-        issueDetail.taskuserid = this.$route.query.taskuserid || ''
+        issueDetail.taskid = this.$route.query.taskid || ''
         let queryIssueDetailsUrl = prefix + '/bms/taskUserSend/queryIssueDetails.action'
         this.$http.post(queryIssueDetailsUrl, issueDetail).then((response) => {
           console.log(response)
@@ -218,10 +171,6 @@ export default {
           this.showloading = false
         })
       }
-    },
-    showPic (src) {
-      this.dialogVisible.src = src
-      this.dialogVisible.show = true
     }
   },
   created () {
@@ -245,7 +194,6 @@ export default {
         this.getIssueDetail(this.pager, 15)
       }
     })
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   }
 }
 </script>
@@ -269,11 +217,6 @@ li {
 a {
   color: #42b983;
 }
-<<<<<<< HEAD
-=======
-#showpic .el-dialog--tiny{
-  width: 100%;
-}
 .task--detail-header{
   height: 2.6rem;
   padding: 0 0.8rem;
@@ -285,29 +228,22 @@ a {
     line-height: 2.6rem;
   }
 }
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
 .complete-detail{
   padding: 0 0.8rem;
   &-title{
     text-align: left;
-<<<<<<< HEAD
-    margin: 1rem 0;
+    margin: 0.5rem 0;
   }
   &-text{
     margin-top: 1rem;
     width: 100%;
     height: 20rem;
     overflow-y: scroll;
-=======
-    margin: 0.5rem 0;
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   }
   &-pic{
     display: flex;
     justify-content: space-around;
     margin-top: 1rem;
-<<<<<<< HEAD
-=======
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -316,28 +252,18 @@ a {
   .commenter--item-warp{
     max-height: 24rem;
     overflow-y: scroll;
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   }
 }
 .commenter--item{
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-<<<<<<< HEAD
-  border: 1px dashed #13CE66;
-    &-left,&-right{
-      display: flex;
-      flex-direction: column;
-      div{
-        width: 10rem;
-=======
   border: 1px dashed #eee;
     &-left,&-right{
       display: flex;
       flex-direction: column;
       width: 50%;
       div,a{
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
         text-align: left;
         white-space: nowrap;
         text-overflow:ellipsis;
@@ -345,19 +271,12 @@ a {
       }
     }
     &-right{
-<<<<<<< HEAD
-=======
       padding-left: 0.2rem;
       &-pic{
         padding-top: 0.2rem;
         height: 3rem;
         width: 100%;
-        img{
-          width: 100%;
-          height: 100%;
-        }
       }
->>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
       .btn-detail{
         margin-top: 0.5rem;
         width: 6rem;

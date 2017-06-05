@@ -6,7 +6,11 @@
     <i class="el-icon-delete"></i>
     <el-button type="primary" icon="search">搜索</el-button> -->
     <div class="infomation">
+<<<<<<< HEAD
       <div v-show="showloading" class=""><span class="el-icon-loading" ></span>数据加载中</div>
+=======
+      <div v-show="showloading" class="showloading"><span class="el-icon-loading" ></span>数据加载中</div>
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
       <div class="infomation--select">
         <div class="infomation--select-ku">
           <el-form :inline="true" class="demo-form-inline">
@@ -41,9 +45,15 @@
         </div>
       </div>
       <el-table :data="tableData" border style="width: 100%">
+<<<<<<< HEAD
        <el-table-column  prop="content" label="内容" width="120"></el-table-column>
        <el-table-column  prop="times" label="引用次数" width="115"></el-table-column>
        <el-table-column  label="详情" width="115">
+=======
+       <el-table-column  prop="content" label="内容"></el-table-column>
+       <el-table-column  prop="times" label="引用次数"></el-table-column>
+       <el-table-column  label="详情">
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
          <template scope="scope">
            <el-button type="text" size="small" @click.native.prevent="detailid(scope.$index, tableData)">详情</el-button>
          </template>
@@ -72,6 +82,10 @@ export default {
       queryCorpusListArr: [],
       querySpecialList: [],
       tableData: [],
+<<<<<<< HEAD
+=======
+      pager: 1,
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
       formInline: {
         search: '',
         user: '',
@@ -90,7 +104,10 @@ export default {
     ...mapActions([USER_SIGNIN]),
     ...mapActions([USER_INFO]),
     detailid (index, rows) {
+<<<<<<< HEAD
       console.log(index)
+=======
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
       this.$alert(this.tableData[index].content, '复制板', {
         confirmButtonText: '确定'
       })
@@ -124,7 +141,10 @@ export default {
             for (var i = 0; i < res.length; i++) {
               this.queryCorpusListArr.push({cname: response.body[i].cname, id: response.body[i].id})
             }
+<<<<<<< HEAD
             console.log(this.queryCorpusListArr)
+=======
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
           })
         }
       } else {
@@ -133,7 +153,11 @@ export default {
     },
     onSubmit () {
       let paramsearch = {
+<<<<<<< HEAD
         page: 1,
+=======
+        page: this.pager,
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
         rows: 15,
         corpusid: '',
         specialid: '',
@@ -216,6 +240,57 @@ export default {
   },
   created () {
     this.queryCorpusUserList(1, 15)
+<<<<<<< HEAD
+=======
+  },
+  mounted () {
+    let tbodyWrapperEl = document.querySelector('.el-table__body-wrapper')
+    let getTbodyScrollToBottom = () => {
+      let tbodyEl = tbodyWrapperEl.lastElementChild
+      // let lastTr = [].slice.call(tbodyEl.querySelectorAll('tr'), 0).slice(-1)[0]
+      let result = false
+      if (tbodyWrapperEl.clientHeight + tbodyWrapperEl.scrollTop >= tbodyEl.clientHeight) {
+        result = true
+      }
+      return result
+    }
+    tbodyWrapperEl.addEventListener('scroll', (event) => {
+      if (getTbodyScrollToBottom()) {
+        // this.tableData3.push()
+        let param = {
+          page: this.pager,
+          rows: 15,
+          corpusid: '',
+          specialid: '',
+          content: ''
+        }
+        param.corpusid = this.valueselect || ''
+        param.specialid = this.valueselects || ''
+        param.content = this.formInline.search || ''
+        this.showloading = true
+        if (this.user.CHECKED_STATUS) {
+          let prefix = this.user.CHECKED_STATUS
+          let queryCorpusUserList = prefix + '/bms/corpusUser/queryCorpusUserList.action'
+          this.$http.post(queryCorpusUserList, param).then((response) => {
+            let pagetoals = response.body.totals
+            let arrtoals = response.body.rows
+            if (pagetoals > 0) {
+              for (let i = 0; i < arrtoals.length; i++) {
+                this.tableData.push({ times: arrtoals[i].frequency, content: arrtoals[i].content })
+              }
+              if (arrtoals.length === 0) {
+                this.$alert('全部数据在这里啦')
+              }
+            }
+            this.showloading = false
+          })
+        } else {
+          this.$alert('建议重新登录!')
+        }
+        this.pager++
+      }
+    })
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   }
 }
 </script>
@@ -239,6 +314,21 @@ li {
 a {
   color: #42b983;
 }
+<<<<<<< HEAD
+=======
+
+.showloading{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 111;
+  span{
+    position: relative;
+    margin-left: -100%;
+  }
+}
+
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
 .infomation--select{
   &-search{
     .el-input{
@@ -260,7 +350,11 @@ a {
     text-align: center;
   }
   .el-table__body-wrapper{
+<<<<<<< HEAD
     max-height: 18rem;
+=======
+    max-height: 20rem;
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
   }
   table tbody tr .cell{
     text-overflow: ellipsis;

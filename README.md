@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # vue-demo for newcomer
 
 > vue router vuex 示例  elementui infinite-loading   wechat as211025 234501354@qq.com :)
+=======
+# vue-bms-oa
+ 
+> vue router vuex  elementui infinite-loading   wechat as211025 234501354@qq.com :)
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
 
 ## Build Setup
 
@@ -26,6 +32,7 @@ npm run e2e
 # run all tests
 npm test
 ```
+<<<<<<< HEAD
 > 下面是我看到一些挺有用的收藏 可以相互学习借鉴 thx
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
@@ -352,3 +359,5 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 | --------- | --------- |
 |[Exploring-ES6翻译](http://es6-org.github.io/exploring-es6/)|[阮一峰 ES6](http://es6.ruanyifeng.com)|
 |[ECMA-262，第 5 版](http://yanhaijing.com/es5)|[ES5](http://es5.github.io)|
+=======
+>>>>>>> fe67524103ffe3546281d2a8dd81bc4e27082d3f
